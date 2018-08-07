@@ -1,0 +1,9 @@
+---
+
+- name: Enable hyperthreading
+  hosts: all
+  tasks:
+    - name: run the script
+      script:
+        tools/enable-hyperthreading.sh
+    
