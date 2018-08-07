@@ -1,0 +1,8 @@
+---
+- name: Check hyperthreading
+  hosts: cluster_batch
+  tasks:
+    - name: Fail if hyperthreading is disabled
+      fail:
+        msg: "Hyperthreading is disabled"
+      when: ansible_processor_threads_per_core != 2
