@@ -2,6 +2,7 @@
 
 - name: Enable hyperthreading
   hosts: all
+  gather_facts: false
   tasks:
     - name: run the script
       script:
