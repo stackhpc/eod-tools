@@ -6,4 +6,8 @@
     - name: run the script
       script:
         tools/enable-hyperthreading.sh
-    
+    - name: reboot
+      command: /usr/bin/systemd-run --on-active=10 /usr/bin/systemctl reboot
+      async: 0
+      poll: 0
+      become: True
