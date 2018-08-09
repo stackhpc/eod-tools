@@ -2,13 +2,34 @@
 
 - name: Enable hyperthreading
   hosts: all
-  gather_facts: false
+  vars:
+    reboot_down_timeout: 120
+    reboot_up_timeout: 600
   tasks:
-    - name: run the script
-      script:
-        tools/enable-hyperthreading.sh
-    - name: reboot
-      command: /usr/bin/systemd-run --on-active=10 /usr/bin/systemctl reboot
-      async: 0
-      poll: 0
-      become: True
+    - block:
+        - name: run the script
+          script:
+            tools/enable-hyperthreading.sh
+
+        - name: reboot
+          command: /usr/bin/systemd-run --on-active=10 /usr/bin/systemctl reboot
+          async: 0
+          poll: 0
+          become: True
+
+        - name: Ensure the node goes down
+          local_action:
+            module: wait_for
+            host: "{{ ansible_host | default(inventory_hostname) }}"
+            port: 22
+            state: stopped
+            timeout: "{{ reboot_down_timeout }}"
+
+        - name: Wait for SSH access to return
+          local_action:
+            module: wait_for
+            host: "{{ ansible_host | default(inventory_hostname) }}"
+            port: 22
+            state: started
+            timeout: "{{ reboot_up_timeout }}"
+      when: ansible_processor_threads_per_core != 2
