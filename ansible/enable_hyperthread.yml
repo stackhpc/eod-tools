@@ -1,7 +1,7 @@
 ---
 
 - name: Enable hyperthreading
-  hosts: all
+  hosts: cluster_batch
   vars:
     reboot_down_timeout: 120
     reboot_up_timeout: 600
